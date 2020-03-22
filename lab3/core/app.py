@@ -7,3 +7,6 @@ app.config['MONGODB_DB'] = 'lab3'
 
 db = MongoEngine(app)
 api = Api(app)
+
+from lab3.applications.note import bp as note_bp
+app.register_blueprint(note_bp)

@@ -1,7 +1,7 @@
 from flask_restful import Resource
 
-from nosql.lab3.core.app import api
-from nosql.lab3.models.models import Note
+from lab3.core.app import api
+from lab3.models.models import Note
 
 _BAD_REQUEST = {'message': 'invalid data', 'status': 400}
 _GOOD_REQUEST = {'message': 'ok', 'status': 200}
