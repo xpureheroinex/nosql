@@ -31,8 +31,10 @@ class User(Document):
 
     @staticmethod
     def generate_id():
-        latest_id = User.objects.order_by('-id').first().id
-        return latest_id + 1
+        latest_id = User.objects.order_by('-id').first()
+        if latest_id:
+            return latest_id.id + 1
+        return 1
 
     @staticmethod
     def verify_auth_token(token):
@@ -63,3 +65,10 @@ class Note(Document):
 
     def set_last_update(self):
         self.last_update = datetime.datetime.utcnow()
+
+    @staticmethod
+    def generate_id():
+        latest_id = Note.objects.order_by('-id').first()
+        if latest_id:
+            return latest_id.id + 1
+        return 1
