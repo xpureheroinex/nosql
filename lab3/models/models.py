@@ -54,3 +54,12 @@ class Note(Document):
     text = StringField(required=True)
     user = ReferenceField('User', reverse_delete_rule=CASCADE)
     last_update = DateTimeField(required=True, default=datetime.datetime.utcnow())
+
+    def __init__(self, title, text, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.title = title
+        self.text = text
+        self.user = user
+
+    def set_last_update(self):
+        self.last_update = datetime.datetime.utcnow()

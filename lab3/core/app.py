@@ -9,6 +9,9 @@ app.config["SECRET_KEY"] = 'verysecretkeywowsecurrrrrity'
 db = MongoEngine(app)
 api = Api(app)
 
+from lab3.applications.note import bp as note_bp
+app.register_blueprint(note_bp)
+
 from lab3.applications.user import bp as user_bp
 
 app.register_blueprint(user_bp)
