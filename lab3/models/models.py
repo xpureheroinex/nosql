@@ -30,6 +30,11 @@ class User(Document):
         return s.dumps({'id': self.id, 'username': self.username})
 
     @staticmethod
+    def generate_id():
+        latest_id = User.objects.order_by('-id').first().id
+        return latest_id + 1
+
+    @staticmethod
     def verify_auth_token(token):
         s = Serializer(app.config['SECRET_KEY'])
         try:

@@ -4,6 +4,7 @@ from flask_mongoengine import MongoEngine
 
 app = Flask(__name__)
 app.config['MONGODB_DB'] = 'lab3'
+app.config["SECRET_KEY"] = 'verysecretkeywowsecurrrrrity'
 
 db = MongoEngine(app)
 api = Api(app)

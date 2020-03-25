@@ -14,7 +14,7 @@ class Register(Resource):
         self.parser.add_argument('username', required=True)
         self.parser.add_argument('password', required=True)
 
-    def get(self):
+    def post(self):
         args = self.parser.parse_args()
 
         username = args['username']
@@ -27,7 +27,7 @@ class Register(Resource):
                     'message': f'User with username = {username} already exists!'}
         elif username is not None and password is not None:
             user = User(
-                id=1,
+                id=User.generate_id(),
                 username=username
             )
             user.set_password(password)
