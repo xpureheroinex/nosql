@@ -1,6 +1,8 @@
 import datetime
+import re
 
 from flask_restful import Resource, reqparse
+from mongoengine import Q
 
 from lab3.core.app import api
 from lab3.models.models import Note, User
@@ -155,22 +157,21 @@ class Search(Resource):
 
     def get(self):
         args = self.parser.parse_args()
-        search = args['search']
+        search = args.get('search')
         if args['Authorization'] is None:
             return {'message': 'Unauthorized', 'status': 401}
         token = args['Authorization'].split(' ')[1]
         if User.verify_auth_token(token) is None:
             return {'message': 'Unauthorized', 'status': 401}
         user_id = User.verify_auth_token(token)['user_id']
-        user = User.objects(id=user_id)
+        user = User.objects(id=user_id).first()
         if user is None:
             return _BAD_REQUEST
         elif search is not None:
             note_list = []
             research = search.strip()
-            # search by title or text???
-            notes = Note.objects(user=user, title=research).all()
-            #FIXME: note.user doesn't work, we need to figure out how to work with reference fields
+            regex = re.compile(f'.*{research}.*', re.IGNORECASE)
+            notes = Note.objects.filter((Q(title=regex) | Q(text=regex)) & Q(user=user)).all()
             for note in notes:
                 info = {'title': note.title,
                         'text': note.text,
