@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_restful import Api
 from flask_mongoengine import MongoEngine
 
@@ -8,6 +9,7 @@ app.config["SECRET_KEY"] = 'verysecretkeywowsecurrrrrity'
 
 db = MongoEngine(app)
 api = Api(app)
+CORS(app)
 
 from lab3.applications.note import bp as note_bp
 app.register_blueprint(note_bp)

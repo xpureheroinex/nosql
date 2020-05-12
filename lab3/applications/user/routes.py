@@ -94,9 +94,28 @@ class UserProfile(Resource):
 
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('old_password', required=True)
-        self.parser.add_argument('new_password', required=True)
+        self.parser.add_argument('old_password', required=False)
+        self.parser.add_argument('new_password', required=False)
         self.parser.add_argument('Authorization', location='headers')
+
+    def get(self):
+        args = self.parser.parse_args()
+        authorization = args.pop('Authorization', "")
+        if not authorization:
+            return {'message': 'Unauthorized', "status": 403}, 403
+        token = authorization.split(' ')[1]
+        response = User.verify_auth_token(token)
+        user_id = response.pop("user_id", None)
+        username = response.pop("username", None)
+        if not user_id or not username:
+            return {'message': 'Unauthorized',  "status": 403}, 403
+
+        user = User.objects(id=user_id).first()
+        info = {
+            'id': user.id,
+            'username': user.username
+        }
+        return {"user": info,  "status": 200}, 200
 
     def put(self):
         args = self.parser.parse_args()
@@ -120,7 +139,7 @@ class UserProfile(Resource):
 
                     user.save()
 
-                    return {'message': 'User was successfully updated!', 'status': 201}
+                    return {'message': 'User was successfully updated!', 'status': 200}
                 return _BAD_REQUEST
             else:
                 return _BAD_REQUEST

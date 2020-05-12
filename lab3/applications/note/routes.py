@@ -18,6 +18,7 @@ class Notes(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('Authorization', location='headers')
         self.parser.add_argument('text')
+        self.parser.add_argument('title')
 
     def get(self, note_id):
         args = self.parser.parse_args()
@@ -33,6 +34,7 @@ class Notes(Resource):
             return _NOT_FOUND_REQUEST
         else:
             response = {'title': note.title,
+                        "id": note.id,
                         'text': note.text,
                         'user': note.user.id,
                         'last_update': datetime.datetime.strftime(note.last_update, "%d-%m-%Y")
@@ -42,6 +44,7 @@ class Notes(Resource):
     def put(self, note_id):
         args = self.parser.parse_args()
         note_text = args['text']
+        note_title = args['title']
         if args['Authorization'] is None:
             return {'message': 'Unauthorized', 'status': 401}
         token = args['Authorization'].split(' ')[1]
@@ -55,6 +58,10 @@ class Notes(Resource):
         elif note.user.id == user.id:
             if note_text:
                 note.text = note_text
+                note.set_last_update()
+                note.save()
+            if note_title:
+                note.title = note_title
                 note.set_last_update()
                 note.save()
                 return {'message': 'Note was successfully updated!', 'status': 201}
@@ -124,9 +131,6 @@ class UserNotes(Resource):
         if args['Authorization'] is None:
             return {'message': 'Unauthorized', 'status': 401}
         token = args['Authorization'].split(' ')[1]
-        user_id_from_token = User.verify_auth_token(token)['user_id']
-        if user_id_from_token != user_id:
-            return _BAD_REQUEST
 
         user = User.objects(id=user_id).first()
         if user is None:
