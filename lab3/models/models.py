@@ -4,7 +4,7 @@ from flask_mongoengine import Document
 
 from lab3.core.app import app
 
-from mongoengine import IntField, StringField, DateTimeField, ReferenceField, CASCADE
+from mongoengine import IntField, StringField, DateTimeField, ReferenceField, CASCADE, ListField
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
@@ -56,6 +56,7 @@ class Note(Document):
     text = StringField(required=True)
     user = ReferenceField('User', reverse_delete_rule=CASCADE)
     last_update = DateTimeField(required=True, default=datetime.datetime.utcnow())
+    able_to_edit = ListField(ReferenceField('User'))
 
     def __init__(self, title, text, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
